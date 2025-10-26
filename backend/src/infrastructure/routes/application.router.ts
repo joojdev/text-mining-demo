@@ -3,6 +3,9 @@ import ApplicationPrismaRepository from '../database/prisma/repositories/applica
 import ApplicationService from '@/application/services/application.service'
 import z from 'zod'
 import { badRequest, created, upload } from '@/infrastructure/server'
+import fs from 'fs'
+import { promisify } from 'util'
+const unlinkAsync = promisify(fs.unlink)
 
 const applicationRouter = Router()
 const applicationRepository = new ApplicationPrismaRepository()
@@ -24,12 +27,14 @@ applicationRouter.post(
   async (request, response) => {
     const parsed = CreateApplicationSchema.safeParse(request.body)
 
-    if (!parsed.success) return badRequest(response, 'Dados inválidos')
-    if (await applicationService.existsByEmail({ email: parsed.data.email }))
-      return badRequest(response, 'Já existe uma aplicação com este e-mail')
     if (!request.file) return badRequest(response, 'Arquivo não existente')
-    if (!request.file.filename.endsWith('.pdf'))
-      return badRequest(response, 'Formato de arquivo inválido')
+
+    if (!parsed.success) return badRequest(response, 'Dados inválidos')
+
+    if (await applicationService.existsByEmail({ email: parsed.data.email })) {
+      await unlinkAsync(request.file.path)
+      return badRequest(response, 'Já existe uma aplicação com este e-mail')
+    }
 
     const application = await applicationService.create({
       name: parsed.data.name,

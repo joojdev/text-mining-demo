@@ -23,4 +23,13 @@ const storage = multer.diskStorage({
   },
 })
 
-export const upload = multer({ storage })
+export const upload = multer({
+  storage,
+  fileFilter: (request, file, callback) => {
+    if (file.mimetype === 'application/pdf') {
+      callback(null, true)
+    } else {
+      callback(null, false)
+    }
+  },
+})
