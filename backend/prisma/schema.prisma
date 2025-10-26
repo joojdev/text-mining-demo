@@ -8,9 +8,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ApplicationState {
+  NEW
+  APPROVED
+  REJECTED
+  UNDER_ANALYSIS
+}
+
 model Application {
   id String @id
   name String
-  email String
+  email String @unique
   resume_path String
+  state ApplicationState @default(NEW)
 }
