@@ -21,4 +21,54 @@ model Application {
   email String @unique
   resume_path String
   state ApplicationState @default(NEW)
+  created_at DateTime @default(now())
+
+  resume Resume?
+}
+
+model Resume {
+  id String @id
+  application_id String @unique
+  experience Int
+  phone String
+  location String
+  education String
+  presentation_letter String
+  score Int
+  skills Skill[]
+  links Link[]
+  comments Comment[]
+
+  application Application @relation(fields: [application_id], references: [id], onDelete: Cascade)
+}
+
+model Skill {
+  id String @id
+  label String
+
+  resumes Resume[]
+}
+
+enum LinkType {
+  PORTFOLIO
+  GITHUB
+  LINKEDIN
+}
+
+model Link {
+  id String @id
+  url String
+  type LinkType
+  resume_id String
+
+  @@unique([type, resume_id])
+  resume Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id String @id
+  text String
+  created_at DateTime @default(now())
+  resume_id String
+  resume Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
 }
