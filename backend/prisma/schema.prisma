@@ -37,7 +37,6 @@ model Resume {
   score Int
   skills Skill[]
   links Link[]
-  comments Comment[]
 
   application Application @relation(fields: [application_id], references: [id], onDelete: Cascade)
 }
@@ -62,13 +61,5 @@ model Link {
   resume_id String
 
   @@unique([type, resume_id])
-  resume Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
-}
-
-model Comment {
-  id String @id
-  text String
-  created_at DateTime @default(now())
-  resume_id String
   resume Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
 }

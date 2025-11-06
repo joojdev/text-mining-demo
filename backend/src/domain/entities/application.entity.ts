@@ -7,5 +7,6 @@ export default class Application {
     public email: string,
     public resume_path: string,
     public state: ApplicationState,
+    public created_at: Date,
   ) {}
 }
